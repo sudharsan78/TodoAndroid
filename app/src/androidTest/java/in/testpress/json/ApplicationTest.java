@@ -1,4 +1,4 @@
-package in.testpress.todo;
+package in.testpress.json;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
