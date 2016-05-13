@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">May10.3</string>
     <string name="Add_task_btn">Add</string>
+    <string name="add_icon">Add</string>
+    <string name="dialog_fire_missiles">Add Task</string>
+    <string name="fire">Add</string>
+    <string name="cancel">Cancle</string>
 </resources>
