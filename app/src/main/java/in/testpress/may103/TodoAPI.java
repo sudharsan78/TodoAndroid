@@ -52,6 +52,13 @@ public interface TodoAPI {
                            @Field("task") String task,
                            Callback<Response> callback);
 
+    @FormUrlEncoded
+    @PUT("/api/v1/todo/{id}")
+    public void toggleTaskStatus(@Header("Authorization") String authorization,
+                                 @Path("id") int id,
+                                 @Field("task") String task,
+                                 @Field("completed") Boolean completed,
+                                 Callback<Response> callback);
 
 
 

@@ -2,6 +2,7 @@ package in.testpress.may103;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.SyncStateContract;
@@ -63,6 +64,8 @@ public class Login2Activity extends AppCompatActivity implements View.OnClickLis
         final String USERNAME = usernameText.getText().toString().trim();
         final String PASSWORD = passwordText.getText().toString().trim();
 
+        final ProgressDialog loading = ProgressDialog.show(this,"Loging In","Please wait...",false,false);
+
         RestAdapter adapter = new RestAdapter.Builder()
                 .setEndpoint(ROOT_URL)
                 .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
@@ -84,6 +87,7 @@ public class Login2Activity extends AppCompatActivity implements View.OnClickLis
                 Intent intent = new Intent(Login2Activity.this, MainActivity.class);
                 intent.putExtra("token", authToken.getToken());
                 intent.putExtra("credentials", credentials.toString());
+                loading.dismiss();
                 startActivity(intent);
 //                AccountManager manager = (AccountManager) getSystemService(Context.ACCOUNT_SERVICE);
 //                Account[] account = manager.getAccountsByType(Constants.Auth.MOCKBANK_ACCOUNT_TYPE);
@@ -96,9 +100,11 @@ public class Login2Activity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void failure(RetrofitError error) {
 
+                loading.dismiss();
+
                 AlertDialog.Builder alert= new AlertDialog.Builder(Login2Activity.this);
                 alert.setTitle("Login Error");
-                alert.setMessage("Check the username or password");
+                alert.setMessage("Incorrect username or password");
 
                 alert.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                     @Override

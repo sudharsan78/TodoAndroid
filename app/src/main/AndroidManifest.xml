@@ -20,7 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity android:name=".Login2Activity"
-            android:label="@string/action_sign_in"
             android:theme="@style/AppTheme.AppCompat1">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

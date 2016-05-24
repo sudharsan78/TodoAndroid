@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
@@ -47,7 +48,9 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener  {
+
+//    implements AdapterView.OnItemClickListener
 
     private SwipeRefreshLayout swipeContainer;
 
@@ -83,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         listAdapter =new ListAdapter(this,R.layout.list_layout, tasks);
 
         listView.setAdapter(listAdapter);
+
+        CheckBox simpleCheckBox = (CheckBox) findViewById(R.id.completedcheckBox);
+
 
         //Calling the method that will fetch data
         getTodos();
@@ -124,9 +130,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         final String Task = todo.getTask();
 
         AlertDialog.Builder alert= new AlertDialog.Builder(MainActivity.this);
-        alert.setTitle("Delete");
-        alert.setMessage("Do you want to delete this task?");
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        alert.setTitle("Delete/Edit");
+        alert.setMessage("You can delete or edit this task");
+        alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -158,14 +164,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
-//        alert.setNeutralButton("Edit", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                AlertDialog.Builder alert= new AlertDialog.Builder(MainActivity.this);
+        alert.setNeutralButton("Edit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which  ) {
+                AlertDialog.Builder alert= new AlertDialog.Builder(MainActivity.this);
 //                alert.setView(R.layout.edit_task);
-//                alert.show();
-//            }
-//        });
+                alert.show();
+
+                Intent intent = new Intent(MainActivity.this, Edit_task.class);
+                intent.putExtra("token" ,getIntent().getStringExtra("token"));
+
+                intent.putExtra(Model_task, todo.getTask());
+                intent.putExtra(Model_ID, todo.getId());
+
+                startActivity(intent);
+            }
+        });
         alert.show();
     }
 
@@ -205,26 +219,30 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        Intent intent = new Intent(MainActivity.this, Edit_task.class);
-        intent.putExtra("token" ,getIntent().getStringExtra("token"));
-
         TodoModel task = tasks.get(position);
+        final int ID= task.getId();
 
-        intent.putExtra(Model_task, task.getTask());
-        intent.putExtra(Model_ID, task.getId());
+        CheckBox checkbox = (CheckBox) findViewById(R.id.completedcheckBox);
 
-        startActivity(intent);
+
 
     }
 
 //    @Override
 //    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //
-//        Snackbar.make(findViewById(R.id.myCoordinatorLayout), getTaskId(),
-//                Snackbar.LENGTH_SHORT)
-//                .show();
+//        Intent intent = new Intent(MainActivity.this, Edit_task.class);
+//        intent.putExtra("token" ,getIntent().getStringExtra("token"));
+//
+//        TodoModel task = tasks.get(position);
+//
+//        intent.putExtra(Model_task, task.getTask());
+//        intent.putExtra(Model_ID, task.getId());
+//
+//        startActivity(intent);
 //
 //    }
+
         public class ListAdapter extends ArrayAdapter<TodoModel> {
 
         public ListAdapter(Context context, int textViewResourceId) {
@@ -243,9 +261,36 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             vi = LayoutInflater.from(getContext());
             v = vi.inflate(R.layout.list_layout, null);
 
-            TodoModel p = getItem(position);
+            final TodoModel p = getItem(position);
             TextView tt1 = (TextView) v.findViewById(R.id.showtask);
             tt1.setText(p.getTask());
+            CheckBox checkbox = (CheckBox) v.findViewById(R.id.completedcheckBox);
+            checkbox.setChecked(p.getCompleted());
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    RestAdapter adapter = new RestAdapter.Builder()
+                            .setEndpoint(ROOT_URL)
+                            .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
+                            .build();
+                    TodoAPI api = adapter.create(TodoAPI.class);
+                    api.toggleTaskStatus("Token " + getIntent().getStringExtra("token"), p.getId(), p.getTask(),buttonView.isChecked(), new Callback<Response>() {
+                        @Override
+                        public void success(Response response, Response response2) {
+
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+
+                        }
+                    });
+
+                }
+            });
+
+
             return v;
 
         }
