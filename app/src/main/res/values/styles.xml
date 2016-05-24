@@ -6,11 +6,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">#F7F9FA</item>
     </style>
     
-    <style name="AppTheme.CustomTheme">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowCloseOnTouchOutside">true</item>
+    <style name="AppTheme.AppCompat1" parent="Theme.AppCompat">
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+
     </style>
 
 </resources>

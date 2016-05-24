@@ -39,32 +39,29 @@ public class Pop extends AppCompatActivity implements View.OnClickListener {
         addbtn = (Button) findViewById(R.id.Addbtn);
         addbtn.setOnClickListener(this);
 
-//        DisplayMetrics dm = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(dm);
-//
-//        int width = dm.widthPixels;
-//        int height = dm.heightPixels;
-//
-//        getWindow().setLayout((int) (width*.8), (int)(height*.6));
+
 
 
     }
 
     @Override
     public void onClick(View v) {
+
         createTodos();
+
         editText.setText(" ");
 
     }
 
     private void createTodos() {
         RestAdapter adapter = new RestAdapter.Builder()
+                .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
                 .setEndpoint(ROOT_URL)
                 .build();
 
         TodoAPI api = adapter.create(TodoAPI.class);
 
-        api.createTodos(
+        api.createTodos("Token " + getIntent().getStringExtra("token"),
                 editText.getText().toString(), new Callback<Response>() {
                     @Override
                     public void success(Response response, Response response2) {
@@ -79,7 +76,10 @@ public class Pop extends AppCompatActivity implements View.OnClickListener {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        startActivities(new Intent[]{new Intent(Pop.this, MainActivity.class)});
+                        Intent intent = new Intent(Pop.this, MainActivity.class);
+                        intent.putExtra("token" ,getIntent().getStringExtra("token"));
+                        startActivity(intent);
+                        createTodos();
 
                     }
 

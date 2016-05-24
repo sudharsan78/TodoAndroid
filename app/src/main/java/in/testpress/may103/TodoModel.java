@@ -1,12 +1,33 @@
 package in.testpress.may103;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by sudharsan on 10/5/16.
  */
-public class TodoModel {
+public class TodoModel implements Parcelable {
     private int id;
     private String task;
     private Boolean completed;
+
+    protected TodoModel(Parcel in) {
+        id = in.readInt();
+        task = in.readString();
+        completed = in.readByte()!=0;
+    }
+
+    public static final Creator<TodoModel> CREATOR = new Creator<TodoModel>() {
+        @Override
+        public TodoModel createFromParcel(Parcel in) {
+            return new TodoModel(in);
+        }
+
+        @Override
+        public TodoModel[] newArray(int size) {
+            return new TodoModel[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -32,4 +53,19 @@ public class TodoModel {
         this.task = task;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(task);
+        if (completed == null) {
+            dest.writeByte((byte) (0));
+        } else {
+            dest.writeByte((byte) (completed ? 1 : 0));
+        }
+    }
 }

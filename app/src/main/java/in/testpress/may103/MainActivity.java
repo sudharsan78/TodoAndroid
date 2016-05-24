@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.StaticLayout;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit.Callback;
@@ -45,12 +47,11 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private SwipeRefreshLayout swipeContainer;
 
     private ListAdapter listAdapter ;
-//    ImageButton deletebtn;
 
     public static final String ROOT_URL = "https://aqueous-cove-75719.herokuapp.com";
     private ListView listView;
@@ -60,9 +61,20 @@ public class MainActivity extends AppCompatActivity  {
 
 
     public void addTaskAction(MenuItem mi) {
-        startActivities(new Intent[]{new Intent(MainActivity.this, Pop.class)});
+
+//        "Token " + getIntent().getStringExtra("token")
+
+        Intent intent = new Intent(this, Pop.class);
+
+        intent.putExtra("token" ,getIntent().getStringExtra("token"));
+        startActivity(intent);
+//        startActivity(new Intent(this, Pop.class));
+//        startActivities(new Intent[]{new Intent(MainActivity.this, Pop.class)});
     }
 
+    public static final String Model_ID = "task_id";
+    public static final String Model_task= "task";
+    private String auToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +82,9 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+//        Intent intent = getIntent();
+//        auToken.(intent.getStringExtra(Login2Activity.AUTHENTICATION));
 
 //        deletebtn = (ImageButton) findViewById(R.id.imageButton);
 //        deletebtn.setOnClickListener(this);
@@ -83,7 +98,7 @@ public class MainActivity extends AppCompatActivity  {
         //Calling the method that will fetch data
         getTodos();
 
-
+        listView.setOnItemClickListener(this);
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -91,7 +106,6 @@ public class MainActivity extends AppCompatActivity  {
                 TodoModel todo = (TodoModel) parent.getAdapter().getItem(position);
 //                Toast.makeText(getApplicationContext(), "id" + todo.getId() , Toast.LENGTH_SHORT)
 //                        .show();
-
                 deletetask(todo);
 
                 return false;
@@ -118,32 +132,32 @@ public class MainActivity extends AppCompatActivity  {
     private void deletetask(final TodoModel todo) {
 
         final int ID= todo.getId();
+        final String Task = todo.getTask();
 
         AlertDialog.Builder alert= new AlertDialog.Builder(MainActivity.this);
         alert.setTitle("Delete");
         alert.setMessage("Do you want to delete this task?");
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
                 RestAdapter adapter = new RestAdapter.Builder()
                         .setEndpoint(ROOT_URL)
+                        .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
                         .build();
                 TodoAPI api = adapter.create(TodoAPI.class);
 
-                api.deletetask(ID, new Callback<Response>() {
+                api.deletetask("Token " + getIntent().getStringExtra("token") ,ID, new Callback<Response>() {
                     @Override
                     public void success(Response response, Response response2) {
 
                         tasks.remove(todo);
                         getTodos();
 //                        listAdapter.notifyDataSetChanged();
-
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-
                     }
                 });
             }
@@ -154,59 +168,64 @@ public class MainActivity extends AppCompatActivity  {
                 dialog.dismiss();
             }
         });
-        alert.setNeutralButton("Change", new DialogInterface.OnClickListener() {
+
+        alert.setNeutralButton("Edit", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                AlertDialog.Builder alert= new AlertDialog.Builder(MainActivity.this);
+                alert.setView(R.layout.edit_task);
+                alert.show();
             }
         });
         alert.show();
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
-
     }
 
-
     private void getTodos(){
-
         //final ProgressDialog loading = ProgressDialog.show(this,"Fetching Data","Please wait...",false,false);
 
         RestAdapter adapter = new RestAdapter.Builder()
                 .setEndpoint(ROOT_URL)
+                .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
                 .build();
 
         TodoAPI api = adapter.create(TodoAPI.class);
 
-        api.getTodos(new Callback<List<TodoModel>>() {
+        api.getTodos("Token " + getIntent().getStringExtra("token"), new Callback<List<TodoModel>>() {
             @Override
             public void success(List<TodoModel> list, Response response) {
-
                 //loading.dismiss();
-
                 tasks = list;
                 listAdapter.clear();
                 listAdapter.addAll(tasks);
                 listAdapter.notifyDataSetChanged();
-
-
-
             }
 
             @Override
             public void failure(RetrofitError error) {
-
             }
         });
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Intent intent = new Intent(this, Edit_task.class);
+
+        TodoModel task = tasks.get(position);
+
+        intent.putExtra(Model_task, task.getTask());
+        intent.putExtra(Model_ID, task.getId());
+
+        startActivity(intent);
+
+    }
 
 //    @Override
 //    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -216,8 +235,6 @@ public class MainActivity extends AppCompatActivity  {
 //                .show();
 //
 //    }
-
-
         public class ListAdapter extends ArrayAdapter<TodoModel> {
 
         public ListAdapter(Context context, int textViewResourceId) {
@@ -243,11 +260,7 @@ public class MainActivity extends AppCompatActivity  {
 
         }
 
-
     }
-
-
-
 
 }
 

@@ -4,32 +4,32 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/showtask"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:textSize="20sp"
-        android:paddingRight="55dp"
-        android:paddingLeft="10dp"
-
-        />
-
-    <!--<ImageButton-->
+    <!--<CheckBox-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/checkBox"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true" />-->
 
-        <!--android:id="@+id/imageButton"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:src="@android:drawable/ic_delete" />-->
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/showtask"
+        android:textSize="20sp"
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"/>
+        <!--android:layout_toRightOf="@+id/checkBox"-->
+        <!--android:layout_toEndOf="@+id/checkBox"-->
+
+
+
+
 </RelativeLayout>
 
-    <!--android:onClick="deleteTask"-->
+
 
 
 
