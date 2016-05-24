@@ -45,8 +45,12 @@ public interface TodoAPI {
                            @Path("id") int id,
                            Callback<Response> callback);
 
+    @FormUrlEncoded
     @PUT("/api/v1/todo/{id}")
-    public void updatetask(@Path("id") int id, @Part("id") TodoModel todoModel);
+    public void updatetask(@Header("Authorization") String authorization,
+                           @Path("id") int id,
+                           @Field("task") String task,
+                           Callback<Response> callback);
 
 
 

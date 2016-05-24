@@ -36,37 +36,49 @@ public class Edit_task extends AppCompatActivity implements View.OnClickListener
         ok.setOnClickListener(this);
 
         Intent intent = getIntent();
-        edit_task.setText(intent.getStringExtra(Login2Activity.AUTHENTICATION));
-//        edit_task.setText(intent.getStringExtra(MainActivity.Model_task));
-        tid.setText(String.valueOf(intent.getIntExtra(MainActivity.Model_ID,0)));
-
+        edit_task.setText(intent.getStringExtra(MainActivity.Model_task));
+//        tid.setText(String.valueOf(intent.getIntExtra(MainActivity.Model_ID,0)));
 
     }
 
     @Override
     public void onClick(View v) {
 
+        updatetask();
+
 //        updatetask(Integer.parseInt(tid.getText().toString()));
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-
-
-
-
-
-
     }
-    public void updatetask(int i){
+    public void updatetask(){
 
         RestAdapter adapter = new RestAdapter.Builder()
                 .setEndpoint(ROOT_URL)
+                .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
                 .build();
 
         TodoAPI api = adapter.create(TodoAPI.class);
 
-//        api.updatetask(i, new TodoModel());
+        api.updatetask("Token " + getIntent().getStringExtra("token"), getIntent().getIntExtra(MainActivity.Model_ID,0), edit_task.getText().toString(), new Callback<Response>() {
+            @Override
+            public void success(Response response, Response response2) {
+                Intent intent = new Intent(Edit_task.this, MainActivity.class);
+                intent.putExtra("token" ,getIntent().getStringExtra("token"));
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+
     }
 
 
+    public void cancelbtn(View view) {
+        Intent intent = new Intent(Edit_task.this, MainActivity.class);
+        intent.putExtra("token" ,getIntent().getStringExtra("token"));
+        startActivity(intent);
 
+    }
 }

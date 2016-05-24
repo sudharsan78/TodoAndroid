@@ -62,14 +62,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public void addTaskAction(MenuItem mi) {
 
-//        "Token " + getIntent().getStringExtra("token")
-
         Intent intent = new Intent(this, Pop.class);
-
         intent.putExtra("token" ,getIntent().getStringExtra("token"));
         startActivity(intent);
-//        startActivity(new Intent(this, Pop.class));
-//        startActivities(new Intent[]{new Intent(MainActivity.this, Pop.class)});
     }
 
     public static final String Model_ID = "task_id";
@@ -82,12 +77,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-
-//        Intent intent = getIntent();
-//        auToken.(intent.getStringExtra(Login2Activity.AUTHENTICATION));
-
-//        deletebtn = (ImageButton) findViewById(R.id.imageButton);
-//        deletebtn.setOnClickListener(this);
 
         //Initializing the listview
         listView = (ListView) findViewById(R.id.tasklist);
@@ -169,14 +158,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
-        alert.setNeutralButton("Edit", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                AlertDialog.Builder alert= new AlertDialog.Builder(MainActivity.this);
-                alert.setView(R.layout.edit_task);
-                alert.show();
-            }
-        });
+//        alert.setNeutralButton("Edit", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                AlertDialog.Builder alert= new AlertDialog.Builder(MainActivity.this);
+//                alert.setView(R.layout.edit_task);
+//                alert.show();
+//            }
+//        });
         alert.show();
     }
 
@@ -216,7 +205,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        Intent intent = new Intent(this, Edit_task.class);
+        Intent intent = new Intent(MainActivity.this, Edit_task.class);
+        intent.putExtra("token" ,getIntent().getStringExtra("token"));
 
         TodoModel task = tasks.get(position);
 

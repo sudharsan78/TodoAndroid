@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:text="@string/cancel"
         android:id="@+id/button2"
+        android:onClick="cancelbtn"
         android:layout_below="@+id/editText"
         android:layout_toLeftOf="@+id/button"
         android:layout_toStartOf="@+id/button" />
